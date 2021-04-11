@@ -8,6 +8,16 @@ const wss = new Websocket.Server({ noServer: true});
 clients = [];
 newuserClients = [];
 
+
+function pushToClients(senderUid, msg, collabs) {
+	collabs.forEach(function (client) {
+        	if ( senderUid != client.uid ) { 
+			client.ws.send(JSON.stringify(msg));  
+		};
+    	});
+	console.log('websocket out',msg);
+}
+
 wss.on('connnection', (ws, req, clientUid) => {
     const user = User.getUserById(clientUid);
 
@@ -17,7 +27,7 @@ wss.on('connnection', (ws, req, clientUid) => {
 
 })
 
-server.on('upgrade', (request, spcket, head) => {
+server.on('upgrade', (request, socket, head) => {
 
     const getCredentials = request.headers['sec-websocket-protocol'];
     if(getCredentials){
